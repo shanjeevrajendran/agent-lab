@@ -15,6 +15,8 @@ Prints PASS/FAIL per case plus total (simulated) cost and latency. Exits non-zer
 
 Runs `python3 evals.py` before every commit and blocks the commit if any case fails.
 
+CI (`.github/workflows/ci.yml`) runs the evals and `check_router_bypass.py` on every push to `main` and every pull request.
+
 ## Files
 
 | File | Job |
@@ -24,6 +26,7 @@ Runs `python3 evals.py` before every commit and blocks the commit if any case fa
 | `agent.py` | ReAct loop: reason, call a tool, observe, repeat |
 | `router.py` | Privacy check first, then cost/latency; logs every decision |
 | `evals.py` | Runs `cases.json`, scores answers, routing and privacy |
+| `check_router_bypass.py` | Fails if anything calls `.generate(` outside `router.py` and `agent.py` |
 | `cases.json` | Synthetic test cases |
 | `PRIVACY.md` | What `local_only`, `cloud_safe` and `public` mean |
 
