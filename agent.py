@@ -4,10 +4,14 @@ Model reply format:
     Action: tool_name[input]
     Final Answer: the answer
 """
+import logging
 import re
 from dataclasses import dataclass
 
+from adapters import PrivacyViolationError
 from tools import TOOLS
+
+log = logging.getLogger("agent-lab")
 
 _ACTION = re.compile(r"Action:\s*(\w+)\[(.*)\]", re.DOTALL)
 _FINAL = re.compile(r"Final Answer:\s*(.*)", re.DOTALL)
@@ -24,10 +28,11 @@ class AgentResult:
     steps: int
     cost_usd: float
     latency_s: float
+    blocked: bool = False  # True if a privacy lock stopped the request
 
 
 def run_agent(model, question: str, sensitivity=None, max_steps: int = 5) -> AgentResult:
-    """`model` is anything with generate(messages, sensitivity) -> Reply (adapter or router).
+    """`model` is anything with generate(messages, sensitivity) -> Reply (the router).
 
     `sensitivity` labels the request (see PRIVACY.md); missing means local-only.
     """
@@ -38,7 +43,12 @@ def run_agent(model, question: str, sensitivity=None, max_steps: int = 5) -> Age
     cost = latency = 0.0
 
     for step in range(1, max_steps + 1):
-        reply = model.generate(messages, sensitivity)
+        try:
+            reply = model.generate(messages, sensitivity)
+        except PrivacyViolationError as e:
+            # Fail closed: stop the request, log loudly, report a clean failure.
+            log.error("PRIVACY BLOCK (step %d): %s", step, e)
+            return AgentResult("(blocked by privacy policy)", step, cost, latency, blocked=True)
         cost += reply.cost_usd
         latency += reply.latency_s
         messages.append({"role": "assistant", "content": reply.text})

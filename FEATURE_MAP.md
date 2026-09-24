@@ -7,7 +7,7 @@ Purpose: turn a vague report ("routing looks wrong", "the agent loops") into a c
 - **How to reach it**: `LocalAdapter(script).complete(messages, sensitivity)` and `CloudAdapter(script).complete(...)`. Only `router.py` may call `.complete(` (checked in CI); agents go through `Router.generate`. Try the snippet in `.claude/skills/control-agent-lab/SKILL.md`.
 - **Key symbols**: `Adapter`, `_ScriptedAdapter`, `Reply`, `allowed` (levels each adapter may receive)
 - **Owning files**: `adapters.py`
-- **Common failure modes**: separate reply counters per adapter, so a case that flips adapters mid-loop replays its script; `PermissionError` when cloud receives `local_only`; passing a raw adapter to `run_agent` raises `AttributeError` (no `generate`, by design).
+- **Common failure modes**: separate reply counters per adapter, so a case that flips adapters mid-loop replays its script; `PrivacyViolationError` (a `PermissionError`) when cloud receives `local_only`, which the agent loop logs and turns into `blocked=True`; passing a raw adapter to `run_agent` raises `AttributeError` (no `generate`, by design).
 
 ### Privacy / sensitivity
 - **User-facing description**: every request carries a label (`local_only`, `cloud_safe`, `public`). Missing or unrecognized means `local_only`.
@@ -25,7 +25,7 @@ Purpose: turn a vague report ("routing looks wrong", "the agent loops") into a c
 
 ### ReAct agent loop
 - **User-facing description**: model reasons, picks a tool, sees the result, repeats until `Final Answer:` or the step cap.
-- **How to reach it**: `run_agent(model, question, sensitivity=None, max_steps=5)`; returns `AgentResult(answer, steps, cost_usd, latency_s)`.
+- **How to reach it**: `run_agent(model, question, sensitivity=None, max_steps=5)`; returns `AgentResult(answer, steps, cost_usd, latency_s, blocked)`.
 - **Key symbols**: `run_agent`, `_ACTION`, `_FINAL` (reply-parsing regexes), `SYSTEM_PROMPT`
 - **Owning files**: `agent.py`
 - **Common failure modes**: malformed replies get an error observation and consume a step; hitting `max_steps` returns "(no answer: step limit reached)".

@@ -22,6 +22,10 @@ class Sensitivity(str, Enum):
             return cls.LOCAL_ONLY
 
 
+class PrivacyViolationError(PermissionError):
+    """Raised by an adapter's lock when it is sent data it may not receive."""
+
+
 @dataclass
 class Reply:
     text: str
@@ -54,7 +58,7 @@ class _ScriptedAdapter(Adapter):
         self.calls += 1
         level = Sensitivity.parse(sensitivity)
         if level not in self.allowed:
-            raise PermissionError(f"{self.name} adapter may not receive {level.value} data")
+            raise PrivacyViolationError(f"{self.name} adapter may not receive {level.value} data")
         text = self.script[min(self._i, len(self.script) - 1)]
         self._i += 1
         return Reply(text, self.cost_usd, self.latency_s)

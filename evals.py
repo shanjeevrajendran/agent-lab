@@ -36,10 +36,9 @@ def run_case(case: dict) -> dict:
     sensitivity = case.get("sensitivity")
     private = Sensitivity.parse(sensitivity) is Sensitivity.LOCAL_ONLY
 
-    try:
-        result = run_agent(router, question, sensitivity)
-    except PermissionError as e:  # the cloud adapter's second lock fired
-        return _fail(case, f"blocked: {e} (cloud invoked {cloud.calls}x)")
+    result = run_agent(router, question, sensitivity)
+    if result.blocked:  # the privacy lock fired and the agent stopped the request
+        return _fail(case, f"blocked by privacy policy (cloud invoked {cloud.calls}x)")
 
     used = {e["adapter"] for e in router.log}
     correct = result.answer.strip().lower() == case["expected"].strip().lower()

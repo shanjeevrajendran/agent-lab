@@ -7,7 +7,7 @@ Operating rule: whenever you correct the same thing twice, move it up a rung ins
 
 | Rule | Current enforcement | Rung | Status |
 |---|---|---|---|
-| Cloud never receives `local_only` data | `CloudAdapter.allowed` raises `PermissionError` | 1 | Strong. Fails loudly at runtime. |
+| Cloud never receives `local_only` data | `CloudAdapter.allowed` raises `PrivacyViolationError` | 1 | Strong. The agent loop logs `PRIVACY BLOCK` and returns a clean `blocked` result; evals fail the case. |
 | Missing or typo'd label means `local_only` | `Sensitivity.parse` fails closed, plus two eval cases | 1 | Strong. Eval cases only run when someone runs them. |
 | Router checks privacy before cost | Code order, `PRIVACY.md`, and eval asserts on the router log (adapter=local, reason=privacy) plus the cloud call counter, including case `note-local-only-long` | 4 (rung 3 once evals run in CI) | Covered. Before this was added, the evals passed 6/6 with the privacy check removed. |
 | `.env` is never committed | `.gitignore` | 3 (in intent) | Active: repo initialized and pushed; no `.env` was staged in the first commit. |
@@ -20,7 +20,7 @@ Operating rule: whenever you correct the same thing twice, move it up a rung ins
 1. ~~Make evals catch a wrong check order.~~ Done: `note-local-only-long` is over 2x the length threshold and the evals assert on the decision log. The case depends on the provisional length heuristic; re-check it when that is replaced.
 2. ~~Give evals a hard-fail home.~~ Done: pre-commit hook plus a GitHub Actions job. Remaining (optional): branch protection requiring the `checks` job, so a red run blocks merges.
 3. ~~Add a banned-pattern check.~~ Done as a second CI step (`check_router_bypass.py`; the only allowlisted file is `router.py`), and the raw-adapter case is now structural (adapters have no `generate`).
-4. *(Optional)* **Typed privacy error.** Raise a `PrivacyViolationError` from the adapter's second lock, catch it at the loop boundary and log it loudly: a clean failure for the user, fail-closed internally.
+4. ~~Typed privacy error.~~ Done: the adapter lock raises `PrivacyViolationError` (a `PermissionError` subclass), `run_agent` catches it, logs `PRIVACY BLOCK` at ERROR and returns `blocked=True`. Evals fail a blocked case and still assert on the cloud call counter and decision log, so a swallowed block cannot pass as handled.
 
 ## Quick audit (run periodically)
 

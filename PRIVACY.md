@@ -16,7 +16,7 @@ Synthetic examples:
 ## Rules
 1. **Unknown means local-only.** A missing, misspelled or unrecognised label is treated as `local_only` (`Sensitivity.parse`).
 2. **Privacy is the router's first check**, before cost or latency. A `local_only` request is never sent to cloud, even if the local model is slower or weaker.
-3. **Two locks.** The router avoids cloud for `local_only`, and `CloudAdapter` refuses it with a `PermissionError` anyway, so a routing bug cannot leak data.
+3. **Two locks.** The router avoids cloud for `local_only`, and `CloudAdapter` refuses it with a `PrivacyViolationError` anyway, so a routing bug cannot leak data. The agent loop logs the block loudly and returns a clean `blocked` result.
 4. **The caller sanitizes.** Marking something `cloud_safe` is a promise that the caller already removed private details.
 
 ## Not covered (yet)

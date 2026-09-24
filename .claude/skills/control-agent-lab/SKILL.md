@@ -31,7 +31,7 @@ CLI project, Python 3, no installs, no network. Run everything from the project 
 ## Capture evidence
 
 - **Wrong answer**: the `note` column shows `got '...'`; read `agent.py` only after you have seen the failing output.
-- **Routing/privacy**: inspect `router.log` (adapter, reason, sensitivity per call). `reason` says whether privacy or cost decided.
+- **Routing/privacy**: inspect `router.log` (adapter, reason, sensitivity per call). `reason` says whether privacy or cost decided. A `PRIVACY BLOCK` line on stderr and `blocked=True` on the result mean a privacy lock fired.
 - **Crash**: capture the full traceback, not just the last line.
 
 ## Verify, don't assert
