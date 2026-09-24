@@ -1,0 +1,53 @@
+[
+  {
+    "id": "add-public",
+    "question": "What is 17 * 3?",
+    "sensitivity": "public",
+    "script": ["Action: calculator[17 * 3]", "Final Answer: 51"],
+    "expected": "51"
+  },
+  {
+    "id": "lookup-public",
+    "question": "What is the capital of Zorland?",
+    "sensitivity": "public",
+    "script": ["Action: lookup[capital of Zorland]", "Final Answer: Zorvik"],
+    "expected": "Zorvik"
+  },
+  {
+    "id": "note-local-only",
+    "question": "Summarize this note from Jane Doe's medical record.",
+    "sensitivity": "local_only",
+    "script": ["Final Answer: Note summarized."],
+    "expected": "Note summarized."
+  },
+  {
+    "id": "unlabeled-defaults-local",
+    "question": "What is 2 + 2?",
+    "script": ["Action: calculator[2 + 2]", "Final Answer: 4"],
+    "expected": "4"
+  },
+  {
+    "id": "typo-label-defaults-local",
+    "question": "What is 10 - 4?",
+    "sensitivity": "publc",
+    "script": ["Action: calculator[10 - 4]", "Final Answer: 6"],
+    "expected": "6"
+  },
+  {
+    "id": "note-cloud-safe",
+    "question": "Summarize this sanitized note: [PATIENT] visited the clinic on [DATE] for a routine check-up.",
+    "sensitivity": "cloud_safe",
+    "script": ["Final Answer: Routine check-up summarized."],
+    "expected": "Routine check-up summarized.",
+    "expect_cloud": true
+  },
+  {
+    "id": "note-local-only-long",
+    "note": "Deliberately over 2x the router length threshold (200 chars): a cost-first router would send this to cloud. Depends on the provisional length heuristic; re-check if it is replaced.",
+    "long": true,
+    "question": "Summarize the following private note from Jane Doe's medical record. Jane Doe visited the Zorvik clinic on 2031-04-12 for a routine check-up. She reported mild headaches, sleeping about six hours per night, and drinking two coffees a day. Blood pressure was 118/76, pulse 64, weight 61 kg. The clinician advised more water, a regular sleep schedule, and a follow-up visit in three months. No medication was prescribed. She asked about a referral to a dietitian.",
+    "sensitivity": "local_only",
+    "script": ["Final Answer: Note summarized."],
+    "expected": "Note summarized."
+  }
+]
