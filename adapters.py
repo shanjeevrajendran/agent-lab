@@ -33,7 +33,9 @@ class Adapter:
     name = "base"
     allowed: frozenset = frozenset()  # sensitivity levels this adapter may see
 
-    def generate(self, messages: list[dict], sensitivity=None) -> Reply:
+    # Deliberately not named `generate`: only Router.generate is meant for agents to call, so
+    # handing a raw adapter to run_agent fails loudly. See check_router_bypass.py.
+    def complete(self, messages: list[dict], sensitivity=None) -> Reply:
         raise NotImplementedError
 
 
@@ -48,7 +50,7 @@ class _ScriptedAdapter(Adapter):
         self._i = 0
         self.calls = 0  # invocation attempts, including ones that get blocked
 
-    def generate(self, messages: list[dict], sensitivity=None) -> Reply:
+    def complete(self, messages: list[dict], sensitivity=None) -> Reply:
         self.calls += 1
         level = Sensitivity.parse(sensitivity)
         if level not in self.allowed:

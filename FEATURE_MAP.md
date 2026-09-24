@@ -4,10 +4,10 @@ Purpose: turn a vague report ("routing looks wrong", "the agent loops") into a c
 
 ### Adapters (local and cloud)
 - **User-facing description**: interchangeable stub models. Local is free and fast; cloud costs money and is slower. Both return scripted replies.
-- **How to reach it**: `LocalAdapter(script).generate(messages, sensitivity)` and `CloudAdapter(script).generate(...)`. Try the snippet in `.claude/skills/control-agent-lab/SKILL.md`.
+- **How to reach it**: `LocalAdapter(script).complete(messages, sensitivity)` and `CloudAdapter(script).complete(...)`. Only `router.py` may call `.complete(` (checked in CI); agents go through `Router.generate`. Try the snippet in `.claude/skills/control-agent-lab/SKILL.md`.
 - **Key symbols**: `Adapter`, `_ScriptedAdapter`, `Reply`, `allowed` (levels each adapter may receive)
 - **Owning files**: `adapters.py`
-- **Common failure modes**: separate reply counters per adapter, so a case that flips adapters mid-loop replays its script; `PermissionError` when cloud receives `local_only`.
+- **Common failure modes**: separate reply counters per adapter, so a case that flips adapters mid-loop replays its script; `PermissionError` when cloud receives `local_only`; passing a raw adapter to `run_agent` raises `AttributeError` (no `generate`, by design).
 
 ### Privacy / sensitivity
 - **User-facing description**: every request carries a label (`local_only`, `cloud_safe`, `public`). Missing or unrecognized means `local_only`.

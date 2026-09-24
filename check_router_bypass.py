@@ -1,16 +1,18 @@
-"""Fail if anything calls `.generate(` outside the files allowed to.
+"""Fail if anything but router.py can reach an adapter, or fake the router's entry point.
 
-Only router.py (calls the adapters) and agent.py (calls whatever model it was given,
-normally a Router) may call generate. Any other caller would bypass the router's
-privacy check.
+Two rules, both enforced everywhere except router.py:
+  1. No `.complete(` calls. `complete` is the adapters' entry point; only the router calls it.
+  2. No `def generate`. `generate` is the router's public entry point, which agents call. A
+     class defining its own `generate` could be handed to run_agent and skip the router.
+Calling `.generate(` is fine (agent.py does): the only real `generate` is the router's.
 
-Limit: this cannot catch a raw adapter being passed to run_agent as the model.
+The adapters' own lock (CloudAdapter refusing local_only data) still applies underneath.
 """
 import ast
 import sys
 from pathlib import Path
 
-ALLOWED = {"router.py", "agent.py"}
+ALLOWED = {"router.py"}
 
 
 def violations(root: Path) -> list[str]:
@@ -23,8 +25,10 @@ def violations(root: Path) -> list[str]:
             continue
         for node in ast.walk(ast.parse(path.read_text(), filename=str(path))):
             if (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
-                    and node.func.attr == "generate"):
-                found.append(f"{rel}:{node.lineno}: .generate() called outside router.py/agent.py")
+                    and node.func.attr == "complete"):
+                found.append(f"{rel}:{node.lineno}: .complete() called outside router.py")
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == "generate":
+                found.append(f"{rel}:{node.lineno}: def generate outside router.py")
     return found
 
 

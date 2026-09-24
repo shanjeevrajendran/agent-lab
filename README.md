@@ -26,7 +26,8 @@ CI (`.github/workflows/ci.yml`) runs the evals and `check_router_bypass.py` on e
 | `agent.py` | ReAct loop: reason, call a tool, observe, repeat |
 | `router.py` | Privacy check first, then cost/latency; logs every decision |
 | `evals.py` | Runs `cases.json`, scores answers, routing and privacy |
-| `check_router_bypass.py` | Fails if anything calls `.generate(` outside `router.py` and `agent.py` |
+| `check_router_bypass.py` | Fails if anything outside `router.py` calls an adapter's `.complete(` or defines `generate` |
+| `.env.example` | Placeholder env vars; copy to `.env` (git-ignored) |
 | `cases.json` | Synthetic test cases |
 | `PRIVACY.md` | What `local_only`, `cloud_safe` and `public` mean |
 
@@ -38,5 +39,5 @@ CI (`.github/workflows/ci.yml`) runs the evals and `check_router_bypass.py` on e
 
 ## Next steps
 
-- Swap a stub adapter for a real one (keys go in `.env`, which is git-ignored).
+- Swap a stub adapter for a real one (copy `.env.example` to `.env`, which is git-ignored, and put keys there).
 - Add a sanitizer so `cloud_safe` is checked, not just trusted.

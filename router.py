@@ -27,7 +27,7 @@ class Router:
 
     def generate(self, messages: list[dict], sensitivity=None) -> Reply:
         adapter, reason = self.choose(messages, sensitivity)
-        reply = adapter.generate(messages, sensitivity)
+        reply = adapter.complete(messages, sensitivity)
         self.log.append({
             "adapter": adapter.name,
             "reason": reason,
