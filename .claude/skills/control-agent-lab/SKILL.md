@@ -38,7 +38,7 @@ CLI project, Python 3, no installs, no network. Run everything from the project 
 
 1. Reproduce the reported behavior first, with output, before editing code.
 2. After a change, re-run the same command and show the new output.
-3. If you cannot reproduce it, say so. Do not guess a cause.
+3. If you cannot reproduce it, say so. Do not present a guess as a finding: you may list possible explanations only if each is clearly labelled as a guess, no code is changed because of it, and you say what evidence would confirm it (e.g. the exact request or log line).
 4. Privacy changes must keep `local_only`, unlabeled and misspelled labels off the cloud adapter. Confirm with `python3 evals.py`.
 
 ## Known gotchas
