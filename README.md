@@ -9,6 +9,12 @@ Everything uses stub models and synthetic data, so it runs with no keys or insta
 
 Prints PASS/FAIL per case plus total (simulated) cost and latency. Exits non-zero on any failure.
 
+## Enable the pre-commit hook (once per clone)
+
+    git config core.hooksPath .githooks
+
+Runs `python3 evals.py` before every commit and blocks the commit if any case fails.
+
 ## Files
 
 | File | Job |

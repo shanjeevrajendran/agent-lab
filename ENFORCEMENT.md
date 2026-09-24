@@ -10,14 +10,14 @@ Operating rule: whenever you correct the same thing twice, move it up a rung ins
 | Cloud never receives `local_only` data | `CloudAdapter.allowed` raises `PermissionError` | 1 | Strong. Fails loudly at runtime. |
 | Missing or typo'd label means `local_only` | `Sensitivity.parse` fails closed, plus two eval cases | 1 | Strong. Eval cases only run when someone runs them. |
 | Router checks privacy before cost | Code order, `PRIVACY.md`, and eval asserts on the router log (adapter=local, reason=privacy) plus the cloud call counter, including case `note-local-only-long` | 4 (rung 3 once evals run in CI) | Covered. Before this was added, the evals passed 6/6 with the privacy check removed. |
-| `.env` is never committed | `.gitignore` | 3 (in intent) | Inert: this folder is not a git repo yet. |
-| Evals must pass before changes land | Nothing | none | **Gap.** No CI, no hook, not a git repo. |
+| `.env` is never committed | `.gitignore` | 3 (in intent) | Active: repo initialized and pushed; no `.env` was staged in the first commit. |
+| Evals must pass before changes land | `.githooks/pre-commit` runs `python3 evals.py` and blocks the commit on failure | 3 (local) | Covered locally; verified by a seeded bug in a scratch copy. Not CI: `git commit --no-verify` and clones without `core.hooksPath` skip it. |
 | Agents verify with real output | `control-agent-lab` skill | 4 | Default only; untested until the eval playbook is run. |
 
 ## Promotion candidates
 
 1. ~~Make evals catch a wrong check order.~~ Done: `note-local-only-long` is over 2x the length threshold and the evals assert on the decision log. The case depends on the provisional length heuristic; re-check it when that is replaced.
-2. **Give evals a hard-fail home.** Run `git init`, then add a pre-commit hook or CI job that runs `python3 evals.py` and blocks on a non-zero exit.
+2. ~~Give evals a hard-fail home.~~ Done locally with the pre-commit hook. Remaining: a CI job (e.g. GitHub Actions) running `python3 evals.py`, so it cannot be skipped with `--no-verify`.
 3. **Add a banned-pattern check.** Fail the build if any code outside `router.py` and `evals.py` calls an adapter's `generate` directly, so nothing can bypass the router's privacy check.
 4. *(Optional)* **Typed privacy error.** Raise a `PrivacyViolationError` from the adapter's second lock, catch it at the loop boundary and log it loudly: a clean failure for the user, fail-closed internally.
 
