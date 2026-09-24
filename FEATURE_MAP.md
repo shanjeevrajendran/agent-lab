@@ -33,7 +33,7 @@ Purpose: turn a vague report ("routing looks wrong", "the agent loops") into a c
 ### Router
 - **User-facing description**: picks local or cloud per call. Privacy first, then cost/latency (short prompt → local, long → cloud).
 - **How to reach it**: `Router(local, cloud, long_prompt_chars=200)`; used as `model` in `run_agent`. Read `router.log` afterwards.
-- **Key symbols**: `Router.choose`, `Router.generate`, `router.log` (adapter, reason, sensitivity, cost, latency)
+- **Key symbols**: `Router.choose`, `Router.generate`, `router.log` (adapter, reason, sensitivity, blocked, cost, latency; written before the adapter is called, so refused calls appear with `blocked: True`)
 - **Owning files**: `router.py`
 - **Common failure modes**: the length threshold counts the system prompt, so short questions can still cross it after a few loop steps; prompt length is only a stand-in for difficulty.
 

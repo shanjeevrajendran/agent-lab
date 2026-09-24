@@ -1,5 +1,5 @@
-"""Router: privacy first, then cost/latency. Logs every decision."""
-from adapters import Adapter, Reply, Sensitivity
+"""Router: privacy first, then cost/latency. Logs every decision, including blocked ones."""
+from adapters import Adapter, PrivacyViolationError, Reply, Sensitivity
 
 # Prompt length is a provisional stand-in for task difficulty. When it is replaced,
 # re-check the long cases in cases.json.
@@ -27,12 +27,20 @@ class Router:
 
     def generate(self, messages: list[dict], sensitivity=None) -> Reply:
         adapter, reason = self.choose(messages, sensitivity)
-        reply = adapter.complete(messages, sensitivity)
-        self.log.append({
+        # Log before calling, so a call an adapter refuses still leaves an audit entry.
+        entry = {
             "adapter": adapter.name,
             "reason": reason,
             "sensitivity": Sensitivity.parse(sensitivity).value,
-            "cost_usd": reply.cost_usd,
-            "latency_s": reply.latency_s,
-        })
+            "blocked": False,
+            "cost_usd": 0.0,
+            "latency_s": 0.0,
+        }
+        self.log.append(entry)
+        try:
+            reply = adapter.complete(messages, sensitivity)
+        except PrivacyViolationError:
+            entry["blocked"] = True
+            raise
+        entry["cost_usd"], entry["latency_s"] = reply.cost_usd, reply.latency_s
         return reply
