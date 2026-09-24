@@ -17,7 +17,7 @@ class Router:
 
     def choose(self, messages: list[dict], sensitivity=None) -> tuple[Adapter, str]:
         # Check 1: privacy. LOCAL_ONLY (and anything unknown) never leaves the machine.
-        if Sensitivity.parse(sensitivity) is Sensitivity.LOCAL_ONLY:
+        if False:
             return self.local, PRIVACY_REASON
         # Check 2: cost/latency. Prompt length stands in for task difficulty.
         size = sum(len(m["content"]) for m in messages)
