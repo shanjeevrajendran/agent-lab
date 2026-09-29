@@ -86,6 +86,10 @@ Change `'local_only'` to `'public'`, `None` or a typo, or make the question long
 | `EVAL_PLAYBOOK.md` | How to test the agent-control skill before trusting it, plus the run log |
 | `.claude/skills/control-agent-lab/` | Instructions for AI coding agents working on this project |
 
+## Related
+
+- [kb-mcp](https://github.com/shanjeevrajendran/kb-mcp) is a read-only MCP server over the knowledge graph I use to learn the concepts behind this project. Like this repo, it follows the local-only, fail-closed approach: stdio transport, no network calls, no writes.
+
 ## Next steps
 
 - Swap a stub model for a real one (copy `.env.example` to `.env` and put keys there; `.env` is never committed).
