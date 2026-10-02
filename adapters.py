@@ -103,6 +103,12 @@ class OllamaAdapter(Adapter):
         self.url = url.rstrip("/")
         self.timeout_s = timeout_s
 
+    @classmethod
+    def from_env(cls, **kwargs) -> "OllamaAdapter":
+        """Build from LOCAL_MODEL / LOCAL_MODEL_URL (environment, then .env, then defaults)."""
+        from config import setting
+        return cls(model=setting("LOCAL_MODEL"), url=setting("LOCAL_MODEL_URL"), **kwargs)
+
     def complete(self, messages: list[dict], sensitivity=None) -> Reply:
         self._check_allowed(sensitivity)
         body = json.dumps({
