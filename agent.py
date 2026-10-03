@@ -16,9 +16,12 @@ log = logging.getLogger("agent-lab")
 _ACTION = re.compile(r"Action:\s*(\w+)\[(.*)\]", re.DOTALL)
 _FINAL = re.compile(r"Final Answer:\s*(.*)", re.DOTALL)
 
+# Tuned against qwen3.5:27b (see live_check.py). Keep it short: the router counts it toward
+# prompt length, so every extra character pushes more requests over the cloud threshold.
 SYSTEM_PROMPT = (
-    "Answer the question. To use a tool, reply `Action: tool_name[input]`. "
-    f"Tools: {', '.join(TOOLS)}. When done, reply `Final Answer: ...`."
+    "Reply with ONE line: `Action: tool[input]` or `Final Answer: X`, where X is only the "
+    "answer, no sentence. Tools: calculator[2 * 3], lookup[founder of X]. "
+    "Look facts up; don't guess."
 )
 
 

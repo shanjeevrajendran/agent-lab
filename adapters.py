@@ -97,11 +97,15 @@ class OllamaAdapter(Adapter):
     name = "local"
     allowed = frozenset(Sensitivity)
 
+    # The model must stop after each Action and wait for the real Observation.
+    STOP = ("Observation:",)
+
     def __init__(self, model: str = "qwen3.5:27b", url: str = "http://localhost:11434",
-                 timeout_s: float = 300):
+                 timeout_s: float = 300, max_tokens: int = 256):
         self.model = model
         self.url = url.rstrip("/")
         self.timeout_s = timeout_s
+        self.max_tokens = max_tokens  # caps rambling replies, which otherwise hit the timeout
 
     @classmethod
     def from_env(cls, **kwargs) -> "OllamaAdapter":
@@ -116,7 +120,8 @@ class OllamaAdapter(Adapter):
             "messages": messages,
             "stream": False,
             "think": False,
-            "options": {"temperature": 0},
+            "options": {"temperature": 0, "num_predict": self.max_tokens,
+                        "stop": list(self.STOP)},
         }).encode()
         req = urllib.request.Request(f"{self.url}/api/chat", data=body,
                                      headers={"Content-Type": "application/json"})

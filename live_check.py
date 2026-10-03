@@ -1,4 +1,4 @@
-"""Opt-in smoke test: a few real questions through Router + OllamaAdapter.
+"""Opt-in smoke test: four real questions through Router + OllamaAdapter.
 
 Not part of evals or CI (CI has no Ollama). Needs Ollama running with LOCAL_MODEL pulled;
 settings come from .env via config.py. Run: python3 live_check.py
@@ -17,6 +17,7 @@ QUESTIONS = [
     ("What is 17 * 3?", "51"),
     ("What is the capital of Zorland?", "Zorvik"),
     ("What is the population of Zorvik divided by 1000?", "1200"),
+    ("Who founded Acme?", "Jane Doe"),
 ]
 
 
