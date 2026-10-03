@@ -78,6 +78,7 @@ Change `'local_only'` to `'public'`, `None` or a typo, or make the question long
 | `tools.py` | Toy tools: `calculator` and `lookup` |
 | `evals.py`, `cases.json` | The test harness and its synthetic cases |
 | `check_router_bypass.py` | CI check that nothing bypasses the router |
+| `live_check.py` | Opt-in: real questions through the router to Ollama (not run in CI) |
 | `.env.example` | Settings template (`LOCAL_MODEL`, `LOCAL_MODEL_URL`); copy to `.env` (git-ignored) |
 | `config.py` | Reads `.env`; environment variables take priority |
 | `.githooks/pre-commit`, `.github/workflows/ci.yml` | The pre-commit hook and the CI job |
