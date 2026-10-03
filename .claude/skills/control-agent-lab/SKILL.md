@@ -45,6 +45,6 @@ CLI project, Python 3, no installs, no network. Run everything from the project 
 
 - Models are stubs with scripted replies. Cost and latency are simulated numbers, not measurements.
 - Local and cloud stub adapters keep separate reply counters, so a multi-step case that flips adapters mid-loop replays the script from the start. `evals.py` pins multi-step cases to one adapter for this reason.
-- The router picks cloud for long prompts (default 200 chars, counting the system prompt). Short cases stay local by default.
+- The router picks cloud for long prompts (default 200 chars, not counting system messages). Short cases stay local by default.
 - `Sensitivity.parse` fails closed: missing or unrecognized labels become `local_only`.
 - Running Python creates `__pycache__/`; it is safe to ignore.
