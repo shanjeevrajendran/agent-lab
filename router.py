@@ -19,8 +19,9 @@ class Router:
         # Check 1: privacy. LOCAL_ONLY (and anything unknown) never leaves the machine.
         if Sensitivity.parse(sensitivity) is Sensitivity.LOCAL_ONLY:
             return self.local, PRIVACY_REASON
-        # Check 2: cost/latency. Prompt length stands in for task difficulty.
-        size = sum(len(m["content"]) for m in messages)
+        # Check 2: cost/latency. Prompt length stands in for task difficulty. System messages
+        # are fixed instructions, not part of the task, so they don't count.
+        size = sum(len(m["content"]) for m in messages if m["role"] != "system")
         if size < self.long_prompt_chars:
             return self.local, "cost: short prompt"
         return self.cloud, "quality: long prompt"

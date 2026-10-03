@@ -35,11 +35,19 @@
   },
   {
     "id": "note-cloud-safe",
-    "question": "Summarize this sanitized note: [PATIENT] visited the clinic on [DATE] for a routine check-up.",
+    "question": "Summarize this sanitized note: [PATIENT] visited the clinic on [DATE] for a routine check-up. [PATIENT] reported mild headaches and short sleep. Vitals were normal. The clinician advised more water, a regular sleep schedule, and a follow-up visit in [N] months.",
     "sensitivity": "cloud_safe",
     "script": ["Final Answer: Routine check-up summarized."],
     "expected": "Routine check-up summarized.",
     "expect_cloud": true
+  },
+  {
+    "id": "short-public-stays-local",
+    "note": "Under the 200-char threshold on its own, over it with the system prompt. Guards against counting the system prompt toward prompt length.",
+    "question": "Summarize this public notice: Acme opens a new office in Zorvik.",
+    "sensitivity": "public",
+    "script": ["Final Answer: Acme opened a Zorvik office."],
+    "expected": "Acme opened a Zorvik office."
   },
   {
     "id": "note-local-only-long",

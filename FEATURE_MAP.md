@@ -35,7 +35,7 @@ Purpose: turn a vague report ("routing looks wrong", "the agent loops") into a c
 - **How to reach it**: `Router(local, cloud, long_prompt_chars=200)`; used as `model` in `run_agent`. Read `router.log` afterwards.
 - **Key symbols**: `Router.choose`, `Router.generate`, `router.log` (adapter, reason, sensitivity, blocked, cost, latency; written before the adapter is called, so refused calls appear with `blocked: True`)
 - **Owning files**: `router.py`
-- **Common failure modes**: the length threshold counts the system prompt, so short questions can still cross it after a few loop steps; prompt length is only a stand-in for difficulty.
+- **Common failure modes**: the length threshold counts the whole conversation except system messages, so short questions can still cross it after a few loop steps; prompt length is only a stand-in for difficulty.
 
 ### Eval harness
 - **User-facing description**: runs synthetic cases and reports PASS/FAIL, adapters used, simulated cost and latency. A case fails on a wrong answer, unexpected routing, or a privacy leak.
