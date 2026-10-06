@@ -1,12 +1,14 @@
 # agent-lab
 
+> **Status: complete (learning project).** It did its job; it is no longer being extended. The ideas carry over to a successor that is built from existing tools (Claude Code + Hermes Agent + Ollama) instead of hand-written ones. See [What it taught](#what-it-taught).
+
 A small learning project that shows how an AI agent can use a cheap local model and a stronger cloud model **without leaking private data**. It has:
 
 - a **ReAct agent**: it reasons, calls a tool, reads the result, and repeats until it has an answer,
 - a **router** that picks the local or cloud model for each request, checking privacy first,
 - an **eval harness** that tests all of this on synthetic examples.
 
-Everything uses stub (fake) models and made-up data, so it runs with plain Python: no API keys, no installs, no network.
+The evals use stub (fake) models and made-up data, so they run with plain Python: no API keys, no installs, no network. An optional `live_check.py` runs real questions through the router to a local model served by [Ollama](https://ollama.com).
 
 ## Quick start
 
@@ -20,7 +22,7 @@ You should see:
 
     PASS  add-public                   local  $0.0000  0.10s
     ...
-    7/7 passed | cost $0.0020 | latency 0.90s (simulated)
+    8/8 passed | cost $0.0020 | latency 0.95s (simulated)
 
 Each line is one test case: whether it passed, which model it used, and its (simulated) cost and time. The command exits with code 1 if any case fails.
 
@@ -92,7 +94,14 @@ Change `'local_only'` to `'public'`, `None` or a typo, or make the question long
 
 - [kb-mcp](https://github.com/shanjeevrajendran/kb-mcp) is a read-only MCP server over the knowledge graph I use to learn the concepts behind this project. Like this repo, it follows the local-only, fail-closed approach: stdio transport, no network calls, no writes.
 
-## Next steps
+## What it taught
 
-- Swap a stub model for a real one (copy `.env.example` to `.env` and put keys there; `.env` is never committed).
-- Add a sanitizer so `cloud_safe` data is actually checked, not just trusted.
+| Phase | Where it lives | The lesson |
+|---|---|---|
+| LLM basics | `adapters.py` | One interface for any model; a real local model (Ollama) behind the same shape as the stubs ([#10](https://github.com/shanjeevrajendran/agent-lab/pull/10)) |
+| Agent loop | `agent.py`, `tools.py` | ReAct as a plain loop with a step limit; a real model needs a tuned system prompt, a stop sequence and an output cap to follow the format ([#10](https://github.com/shanjeevrajendran/agent-lab/pull/10)) |
+| Routing and privacy | `router.py`, `PRIVACY.md` | Privacy before cost; unknown labels fail closed; two locks (router + adapter); log before calling so blocked calls are audited ([#8](https://github.com/shanjeevrajendran/agent-lab/pull/8)) |
+| Evals and enforcement | `evals.py`, `cases.json`, `check_router_bypass.py`, `ENFORCEMENT.md` | Assert on the decision log, not just the answer; every bug gets a case that fails on the old code (e.g. the system prompt counting toward prompt length, [#10](https://github.com/shanjeevrajendran/agent-lab/pull/10)) |
+| Testing agents | `EVAL_PLAYBOOK.md` | Blinded tasks with a judge show whether a coding agent reproduces before it fixes ([#3](https://github.com/shanjeevrajendran/agent-lab/pull/3)-[#7](https://github.com/shanjeevrajendran/agent-lab/pull/7)) |
+
+Left open on purpose, because mature tools already do them: a `cloud_safe` sanitizer (PII redaction), multi-agent orchestration, and a gateway with cost tracking.
