@@ -1,6 +1,6 @@
 # agent-lab
 
-> **Status: complete (learning project).** It did its job; it is no longer being extended. The ideas carry over to a successor that is built from existing tools (Claude Code + Hermes Agent + Ollama) instead of hand-written ones. See [What it taught](#what-it-taught).
+> **Status: complete (learning project).** It did its job; it is no longer being extended. See [What it taught](#what-it-taught).
 
 A small learning project that shows how an AI agent can use a cheap local model and a stronger cloud model **without leaking private data**. It has:
 
